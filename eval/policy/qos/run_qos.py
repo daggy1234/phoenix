@@ -8,10 +8,7 @@ import toml
 import datetime
 import sys
 
-OD = "/tmp/mrpc-eval"
-if len(sys.argv) >= 2:
-    OD = sys.argv[1]
-
+OD = sys.argv[1] if len(sys.argv) >= 2 else "/tmp/mrpc-eval"
 TIME_FMT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 SCRIPTDIR = pathlib.Path(__file__).parent.resolve()
@@ -23,7 +20,7 @@ workdir = os.path.expanduser(workdir)
 os.environ['PHOENIX_PREFIX'] = config['env']['PHOENIX_PREFIX']
 
 os.chdir(workdir)
-os.makedirs(OD+"/qos", exist_ok=True)
+os.makedirs(f"{OD}/qos", exist_ok=True)
 workload_lat = subprocess.Popen([
     "cargo",
     "run",
@@ -39,18 +36,20 @@ workload_lat = subprocess.Popen([
     os.path.join(SCRIPTDIR, "config.toml"),
 ], stdout=subprocess.DEVNULL)
 time.sleep(5)
-subprocess.run([
-    "cargo",
-    "run",
-    "--release",
-    "--bin",
-    "list",
-    "--",
-    "--dump",
-    OD+"/policy/qos/list.json"
-])
+subprocess.run(
+    [
+        "cargo",
+        "run",
+        "--release",
+        "--bin",
+        "list",
+        "--",
+        "--dump",
+        f"{OD}/policy/qos/list.json",
+    ]
+)
 time.sleep(1)
-with open(OD+"/policy/qos/list.json") as f:
+with open(f"{OD}/policy/qos/list.json") as f:
     data = json.load(f)
 mrpc_pid_lat = None
 mrpc_sid_lat = None
@@ -93,18 +92,20 @@ workload_bd = subprocess.Popen([
     os.path.join(SCRIPTDIR, "config.toml"),
 ], stdout=subprocess.DEVNULL)
 time.sleep(5)
-subprocess.run([
-    "cargo",
-    "run",
-    "--release",
-    "--bin",
-    "list",
-    "--",
-    "--dump",
-    OD+"/policy/qos/list.json"
-])
+subprocess.run(
+    [
+        "cargo",
+        "run",
+        "--release",
+        "--bin",
+        "list",
+        "--",
+        "--dump",
+        f"{OD}/policy/qos/list.json",
+    ]
+)
 time.sleep(1)
-with open(OD+"/policy/qos/list.json") as f:
+with open(f"{OD}/policy/qos/list.json") as f:
     data = json.load(f)
 mrpc_pid_bd = None
 mrpc_sid_bd = None
@@ -135,12 +136,12 @@ workload_lat.wait()
 workload_bd.wait()
 
 results = ""
-with open(OD+"/policy/qos/latency_app/rpc_bench_brusty_client_danyang-05.stdout") as f:
+with open(f"{OD}/policy/qos/latency_app/rpc_bench_brusty_client_danyang-05.stdout") as f:
     line = f.readlines()[-1]
     line = line.strip().split(", ")
     results += "With QoS Policy:\n"
     results += "Latency-sensitive workload: " + ", ".join(line[1:]) + "\n"
-with open(OD+"/policy/qos/bandwidth_app/rpc_bench_brusty_client_danyang-05.stdout") as f:
+with open(f"{OD}/policy/qos/bandwidth_app/rpc_bench_brusty_client_danyang-05.stdout") as f:
     line = f.readlines()[-2]
     line = line.strip().split(", ")
     results += "Bandwidth-sensitive workload: " + ", ".join(line[1:]) + "\n"
@@ -178,17 +179,17 @@ workload_bd = subprocess.Popen([
 workload_lat.wait()
 workload_bd.wait()
 
-with open(OD+"/policy/qos/latency_app/rpc_bench_brusty_client_danyang-05.stdout") as f:
+with open(f"{OD}/policy/qos/latency_app/rpc_bench_brusty_client_danyang-05.stdout") as f:
     line = f.readlines()[-1]
     line = line.strip().split(", ")
     results += "Without QoS Policy:\n"
     results += "Latency-sensitive workload: " + ", ".join(line[1:]) + "\n"
-with open(OD+"/policy/qos/bandwidth_app/rpc_bench_brusty_client_danyang-05.stdout") as f:
+with open(f"{OD}/policy/qos/bandwidth_app/rpc_bench_brusty_client_danyang-05.stdout") as f:
     line = f.readlines()[-2]
     line = line.strip().split(", ")
     results += "Bandwidth-sensitive workload: " + ", ".join(line[1:]) + "\n"
 
-with open(OD+"/policy/qos/result.txt", 'wt') as f:
+with open(f"{OD}/policy/qos/result.txt", 'wt') as f:
     print(results, file=f)
 
 print("===== Results =====")

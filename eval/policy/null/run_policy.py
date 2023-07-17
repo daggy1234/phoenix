@@ -7,10 +7,7 @@ import time
 import toml
 import sys
 
-OD = "/tmp/mrpc-eval"
-if len(sys.argv) >= 2:
-    OD = sys.argv[1]
-
+OD = sys.argv[1] if len(sys.argv) >= 2 else "/tmp/mrpc-eval"
 SCRIPTDIR = pathlib.Path(__file__).parent.resolve()
 CONFIG_PATH = os.path.join(SCRIPTDIR, "config.toml")
 
@@ -20,7 +17,7 @@ workdir = os.path.expanduser(workdir)
 os.environ['PHOENIX_PREFIX'] = config['env']['PHOENIX_PREFIX']
 
 os.chdir(workdir)
-os.makedirs(OD+"/policy/null", exist_ok=True)
+os.makedirs(f"{OD}/policy/null", exist_ok=True)
 workload = subprocess.Popen([
     "cargo",
     "run",
@@ -37,17 +34,19 @@ workload = subprocess.Popen([
 ], stdout=subprocess.DEVNULL)
 time.sleep(5)
 
-subprocess.run([
-    "cargo",
-    "run",
-    "--release",
-    "--bin",
-    "list",
-    "--",
-    "--dump",
-    OD+"/policy/list.json"
-])
-with open(OD+"/policy/list.json") as f:
+subprocess.run(
+    [
+        "cargo",
+        "run",
+        "--release",
+        "--bin",
+        "list",
+        "--",
+        "--dump",
+        f"{OD}/policy/list.json",
+    ]
+)
+with open(f"{OD}/policy/list.json") as f:
     data = json.load(f)
 mrpc_pid = None
 mrpc_sid = None
@@ -75,16 +74,18 @@ subprocess.run([
     str(mrpc_sid),
 ])
 time.sleep(1)
-subprocess.run([
-    "cargo",
-    "run",
-    "--release",
-    "--bin",
-    "list",
-    "--",
-    "--dump",
-    OD+"/policy/list.json"
-])
+subprocess.run(
+    [
+        "cargo",
+        "run",
+        "--release",
+        "--bin",
+        "list",
+        "--",
+        "--dump",
+        f"{OD}/policy/list.json",
+    ]
+)
 time.sleep(1)
 
 

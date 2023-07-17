@@ -9,11 +9,11 @@ FRONTEND_SERVER = "danyang-03"
 
 os.makedirs("/tmp/mrpc-eval/microservices", exist_ok=True)
 os.makedirs(os.path.expanduser("~/nfs/mrpc-microservices-eval"), exist_ok=True)
-COLLECT_GEO = "rsync -avz {}:/tmp/mrpc-eval/microservices/geo.csv /tmp/mrpc-eval/microservices/geo.csv".format(GEO_SERVER)
-COLLECT_RATE = "rsync -avz {}:/tmp/mrpc-eval/microservices/rate.csv /tmp/mrpc-eval/microservices/rate.csv".format(RATE_SERVER)
-COLLECT_PROFILE = "rsync -avz {}:/tmp/mrpc-eval/microservices/profile.csv /tmp/mrpc-eval/microservices/profile.csv".format(PROFILE_SERVER)
-COLLECT_SEARCH = "rsync -avz {}:/tmp/mrpc-eval/microservices/search.csv /tmp/mrpc-eval/microservices/search.csv".format(SEARCH_SERVER)
-COLLECT_FRONTEND = "rsync -avz {}:/tmp/mrpc-eval/microservices/frontend.csv /tmp/mrpc-eval/microservices/frontend.csv".format(FRONTEND_SERVER)
+COLLECT_GEO = f"rsync -avz {GEO_SERVER}:/tmp/mrpc-eval/microservices/geo.csv /tmp/mrpc-eval/microservices/geo.csv"
+COLLECT_RATE = f"rsync -avz {RATE_SERVER}:/tmp/mrpc-eval/microservices/rate.csv /tmp/mrpc-eval/microservices/rate.csv"
+COLLECT_PROFILE = f"rsync -avz {PROFILE_SERVER}:/tmp/mrpc-eval/microservices/profile.csv /tmp/mrpc-eval/microservices/profile.csv"
+COLLECT_SEARCH = f"rsync -avz {SEARCH_SERVER}:/tmp/mrpc-eval/microservices/search.csv /tmp/mrpc-eval/microservices/search.csv"
+COLLECT_FRONTEND = f"rsync -avz {FRONTEND_SERVER}:/tmp/mrpc-eval/microservices/frontend.csv /tmp/mrpc-eval/microservices/frontend.csv"
 
 BACKUP = "cp /tmp/mrpc-eval/microservices/*.csv ~/nfs/mrpc-microservices-eval/."
 

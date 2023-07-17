@@ -7,11 +7,7 @@ import time
 import datetime
 import multiprocessing
 
-OD = "/tmp/mrpc-eval"
-if len(sys.argv) >= 2:
-    OD = sys.argv[1]
-
-
+OD = sys.argv[1] if len(sys.argv) >= 2 else "/tmp/mrpc-eval"
 timeformat = "%Y-%m-%dT%H:%M:%S"
 now_timestamp = time.time()
 localOffset = (datetime.datetime.fromtimestamp(
@@ -95,7 +91,7 @@ xticks = [(2 << i) for i in range(0, 14, 2)]
 def get_cpus(path: str):
     cpus = []
     for host in ["server", "client"]:
-        with open(os.path.dirname(path)+f'/mpstat_{host}.out', 'r') as fin:
+        with open(f'{os.path.dirname(path)}/mpstat_{host}.out', 'r') as fin:
             out = fin.read().strip()
         cpu_count = multiprocessing.cpu_count()
         mpstat = []
@@ -129,7 +125,7 @@ def load_result(solution, f: str):
 
 
 solution = 'mRPC (32)'
-for f in glob.glob(OD+"/benchmark/rpc_bench_tput_rdma_32/rpc_bench_tput_*/rpc_bench_client_danyang-05.stdout"):
+for f in glob.glob(f"{OD}/benchmark/rpc_bench_tput_rdma_32/rpc_bench_tput_*/rpc_bench_client_danyang-05.stdout"):
     load_result(solution, f)
 
 # solution = 'mRPC (1)'
@@ -137,7 +133,7 @@ for f in glob.glob(OD+"/benchmark/rpc_bench_tput_rdma_32/rpc_bench_tput_*/rpc_be
 #     load_result(solution, f)
 
 solution = 'mRPC-TCP (128)'
-for f in glob.glob(OD+"/benchmark/rpc_bench_tput_tcp_128/rpc_bench_tput_*/rpc_bench_client_danyang-05.stdout"):
+for f in glob.glob(f"{OD}/benchmark/rpc_bench_tput_tcp_128/rpc_bench_tput_*/rpc_bench_client_danyang-05.stdout"):
     load_result(solution, f)
 
 # solution = 'mRPC-TCP (32)'

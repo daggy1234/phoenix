@@ -3,9 +3,7 @@ from typing import List
 import glob
 import sys
 
-OD = "/tmp/mrpc-eval"
-if len(sys.argv) >= 2:
-    OD = sys.argv[1]
+OD = sys.argv[1] if len(sys.argv) >= 2 else "/tmp/mrpc-eval"
 
 
 def get_rate(path: str) -> List[float]:
@@ -29,5 +27,5 @@ def load_result(sol_before, sol_after, f: str):
         print(f'{round(r/1000,2)},{sol_after},w/ Limit')
 
 
-for f in glob.glob(OD+"/policy/ratelimit/rpc_bench_tput_32b/rpc_bench_client_danyang-05.stdout"):
+for f in glob.glob(f"{OD}/policy/ratelimit/rpc_bench_tput_32b/rpc_bench_client_danyang-05.stdout"):
     load_result('mRPC', 'mRPC', f)
