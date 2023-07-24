@@ -25,10 +25,11 @@ impl Greeter for MyGreeter {
         request: RRef<HelloRequest>,
     ) -> Result<WRef<HelloReply>, mrpc::Status> {
         // Log the received request.
-        eprintln!("request: {:?}", request);
+        let mreqm = String::from_utf8_lossy(&request.name);
+        eprintln!("HelloRequest [name: \"{}\" ]", mreqm);
 
         // Create a new HelloReply with a greeting message.
-        let message = format!("Hello {}!", String::from_utf8_lossy(&request.name));
+        let message = format!("Hello {}!", mreqm);
         let reply = WRef::new(HelloReply {
             message: message.as_bytes().into(),
         });

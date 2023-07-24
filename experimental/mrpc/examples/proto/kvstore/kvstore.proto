@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package kvstore;
+
+message Item {
+  string key = 1;
+  string value = 2;
+}
+
+message Response {
+    string key = 1;
+}
+
+message GetParams {
+    string key = 1;
+}
+
+message AllItems {
+  repeated Item items = 1;
+}
+
+message Success {
+  bool success = 1;
+}
+
+message AllItemsParams {}
+
+service Kvstore {
+	  rpc Put (Item) returns (Item);
+    rpc Get (GetParams) returns (Item);
+    rpc GetAllItems(AllItemsParams) returns (stream Item);
+    rpc Delete(GetParams) returns (Success);
+}
