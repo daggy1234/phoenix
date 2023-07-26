@@ -1,13 +1,12 @@
-from rpc_echo_python_server import MyGreeter
+from rpc_echo_python_server import MyGreeter, HelloRequest, HelloResponse
+import sys,inspect
 
-class MyServer(MyGreeter):
-    def __init__(self):
-        print("init")
-    
-    def sayhello(self, req):
-        print(req)
-        print("python says hi!")
+def say_hello(req: HelloRequest) -> HelloResponse:
+    msg = req.message
+    return HelloResponse(f"Recieved {msg}!")
 
 
-s = MyServer()
+
+s = MyGreeter()
+s.add_say_hello(say_hello)
 s.run("0.0.0.0:5000")

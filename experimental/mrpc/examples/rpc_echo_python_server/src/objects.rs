@@ -25,6 +25,21 @@ impl HelloRequest {
             request_payload: PayloadType::HelloReq,
         }
     }
+
+    #[getter]
+    fn message(&self) -> PyResult<String> {
+        let r = &self.message;
+        Ok(r.to_string())
+    }
+
+    #[getter]
+    fn response_code(&self) -> PyResult<u8> {
+        let r = match self.request_payload {
+            PayloadType::HelloResp => 2,
+            _ => 4,
+        };
+        Ok(r)
+    }
 }
 
 #[derive(Clone, Debug)]

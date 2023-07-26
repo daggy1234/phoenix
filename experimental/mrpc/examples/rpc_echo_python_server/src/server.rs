@@ -11,24 +11,22 @@ use std::panic;
 use std::process;
 use std::{format, io::prelude::*, net::TcpStream};
 
-#[derive(Debug, Default, Clone, Copy)]
+#[derive(Debug, Default, Clone)]
 #[pyclass(subclass)]
-pub struct MyGreeter {}
+pub struct MyGreeter {
+    wraps: Option<Py<PyAny>>,
+}
 
 #[pymethods]
 impl MyGreeter {
     #[new]
     fn new() -> PyResult<Self> {
-        Ok(MyGreeter {})
+        Ok(MyGreeter { wraps: None })
     }
 
-    fn sayhello(&self, req: objects::HelloRequest) -> PyResult<objects::HelloResponse> {
-        // unimplemented!("MyGreeter has no sayhello working :(");
-        let r = objects::HelloResponse {
-            message: req.message,
-            request_payload: objects::PayloadType::HelloResp,
-        };
-        Ok(r)
+    fn add_say_hello(&mut self, wraps: PyObject) -> PyResult<bool> {
+        self.wraps = Some(wraps);
+        Ok(true)
     }
 
     fn run(self: PyRef<'_, Self>, addr: String) -> PyResult<bool> {
@@ -40,14 +38,14 @@ impl MyGreeter {
         }));
 
         ctrlc::set_handler(move || panic!("CTRL C. STOP SHIT RN")).unwrap();
-
+        let obj = self.clone();
         let out = smol::block_on(async {
             let mut server = match mrpc::stub::LocalServer::bind(addr) {
                 Ok(s) => s,
                 Err(e) => return Err(e.to_string()),
             };
             println!("Starting Server...");
-            let myg: MyGreeter = *self;
+            let myg: MyGreeter = obj;
 
             // Add the Greeter service to the server using the custom MyGreeter implementation.
             let serve = server.add_service(GreeterServer::new(myg)).serve().await;
@@ -84,11 +82,13 @@ impl Greeter for MyGreeter {
             message,
             request_payload: objects::PayloadType::HelloReq,
         };
+        let obj = self.clone();
 
         let o = Python::with_gil(|py| -> HelloResponse {
-            let o = self.into_py(py);
             let args = (req,);
-            let res = match o.call_method1(py, "sayhello", args) {
+            let kwargs = None;
+            let o = obj.wraps.unwrap().call(py, args, kwargs);
+            let res = match o {
                 Ok(r) => r,
                 Err(e) => panic!("Error"),
             };
