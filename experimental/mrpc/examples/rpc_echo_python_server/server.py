@@ -1,13 +1,13 @@
-from rpc_echo_python_server import Server
+from rpc_echo_python_server import MyGreeter
 
-class MyServer(Server):
-    def __init__(self, addr: str):
-        self.addr = addr
+class MyServer(MyGreeter):
+    def __init__(self):
+        print("init")
     
-    # def sayhello(self, req):
-    #     print(req)
-    #     print("python says hi!")
+    def sayhello(self, req):
+        print(req)
+        print("python says hi!")
 
 
-s = MyServer("0.0.0.0:5000")
-s.run()
+s = MyServer()
+s.run("0.0.0.0:5000")

@@ -30,6 +30,40 @@ impl MyGreeter {
         };
         Ok(r)
     }
+
+    fn run(self: PyRef<'_, Self>, addr: String) -> PyResult<bool> {
+        let orig_hook = panic::take_hook();
+        panic::set_hook(Box::new(move |panic_info| {
+            // invoke the default handler and exit the process
+            orig_hook(panic_info);
+            process::exit(1);
+        }));
+
+        ctrlc::set_handler(move || panic!("CTRL C. STOP SHIT RN")).unwrap();
+
+        let out = smol::block_on(async {
+            let mut server = match mrpc::stub::LocalServer::bind(addr) {
+                Ok(s) => s,
+                Err(e) => return Err(e.to_string()),
+            };
+            println!("Starting Server...");
+            let myg: MyGreeter = *self;
+
+            // Add the Greeter service to the server using the custom MyGreeter implementation.
+            let serve = server.add_service(GreeterServer::new(myg)).serve().await;
+            match serve {
+                Ok(v) => Ok(true),
+                Err(e) => Err(e.to_string()),
+            }
+        });
+        match out {
+            Ok(o) => Ok(o),
+            Err(e) => Err(PyBaseException::new_err(format!(
+                "Failed to connect: {:?}",
+                e
+            ))),
+        }
+    }
 }
 
 // Implement the Greeter trait for MyGreeter using async_trait.
@@ -74,60 +108,60 @@ impl Greeter for MyGreeter {
     }
 }
 
-#[pyclass(extends=MyGreeter, subclass)]
-pub struct Server {
-    addr: String,
-}
+// #[pyclass(extends=MyGreeter, subclass)]
+// pub struct Server {
+//     addr: String,
+// }
 
-#[pymethods]
-impl Server {
-    #[new]
-    fn new(addr: String) -> (Self, MyGreeter) {
-        let address = &addr;
-        (
-            Server {
-                addr: address.to_string(),
-            },
-            MyGreeter::new().unwrap(),
-        )
-    }
+// #[pymethods]
+// impl Server {
+//     #[new]
+//     fn new(addr: String) -> (Self, MyGreeter) {
+//         let address = &addr;
+//         (
+//             Server {
+//                 addr: address.to_string(),
+//             },
+//             MyGreeter::new().unwrap(),
+//         )
+//     }
 
-    fn sayhello(&self, req: objects::HelloRequest) -> PyResult<objects::HelloResponse> {
-        unimplemented!("Say Hello Nt implemented on server")
-    }
+//     fn sayhello(&self, req: objects::HelloRequest) -> PyResult<objects::HelloResponse> {
+//         unimplemented!("Say Hello Nt implemented on server")
+//     }
 
-    fn run(self: PyRef<'_, Self>) -> PyResult<bool> {
-        let orig_hook = panic::take_hook();
-        panic::set_hook(Box::new(move |panic_info| {
-            // invoke the default handler and exit the process
-            orig_hook(panic_info);
-            process::exit(1);
-        }));
+//     fn run(self: PyRef<'_, Self>) -> PyResult<bool> {
+//         let orig_hook = panic::take_hook();
+//         panic::set_hook(Box::new(move |panic_info| {
+//             // invoke the default handler and exit the process
+//             orig_hook(panic_info);
+//             process::exit(1);
+//         }));
 
-        ctrlc::set_handler(move || panic!("CTRL C. STOP SHIT RN")).unwrap();
+//         ctrlc::set_handler(move || panic!("CTRL C. STOP SHIT RN")).unwrap();
 
-        let out = smol::block_on(async {
-            let mut server = match mrpc::stub::LocalServer::bind(&self.addr) {
-                Ok(s) => s,
-                Err(e) => return Err(e.to_string()),
-            };
-            println!("Starting Server...");
-            let supecl = self.into_super();
-            let myg: MyGreeter = *supecl;
+//         let out = smol::block_on(async {
+//             let mut server = match mrpc::stub::LocalServer::bind(&self.addr) {
+//                 Ok(s) => s,
+//                 Err(e) => return Err(e.to_string()),
+//             };
+//             println!("Starting Server...");
+//             let supecl = self.into_super();
+//             let myg: MyGreeter = *supecl;
 
-            // Add the Greeter service to the server using the custom MyGreeter implementation.
-            let serve = server.add_service(GreeterServer::new(myg)).serve().await;
-            match serve {
-                Ok(v) => Ok(true),
-                Err(e) => Err(e.to_string()),
-            }
-        });
-        match out {
-            Ok(o) => Ok(o),
-            Err(e) => Err(PyBaseException::new_err(format!(
-                "Failed to connect: {:?}",
-                e
-            ))),
-        }
-    }
-}
+//             // Add the Greeter service to the server using the custom MyGreeter implementation.
+//             let serve = server.add_service(GreeterServer::new(myg)).serve().await;
+//             match serve {
+//                 Ok(v) => Ok(true),
+//                 Err(e) => Err(e.to_string()),
+//             }
+//         });
+//         match out {
+//             Ok(o) => Ok(o),
+//             Err(e) => Err(PyBaseException::new_err(format!(
+//                 "Failed to connect: {:?}",
+//                 e
+//             ))),
+//         }
+//     }
+// }
