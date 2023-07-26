@@ -1,8 +1,8 @@
 from rpc_echo_python_server import MyGreeter, HelloRequest, HelloResponse
-import sys,inspect
 
 def say_hello(req: HelloRequest) -> HelloResponse:
     msg = req.message
+    print(f"Got {msg}")
     return HelloResponse(f"Recieved {msg}!")
 
 
