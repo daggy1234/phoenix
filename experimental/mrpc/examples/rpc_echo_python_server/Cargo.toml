@@ -1,16 +1,17 @@
 [package]
-name = "rpc_echo_python_client"
+name = "rpc_echo_python_server"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
-name = "rpc_echo_python_client"
+name = "rpc_echo_python_server"
 crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = "0.19.0"
 mrpc.workspace = true
+ctrlc = "3.4.0"
 prost = { workspace = true, features = ["mrpc-frontend"] }
 
 structopt.workspace = true

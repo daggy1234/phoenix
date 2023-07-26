@@ -1,4 +1,4 @@
-from rpc_echo_python import Connection, HelloRequest
+from rpc_echo_python_client import Connection, HelloRequest
 import time
 
 c = Connection("0.0.0.0:5000")

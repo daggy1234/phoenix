@@ -74,7 +74,8 @@ members = [
   "examples/hotel_reservation",
   # "examples/hotel_microservices",
   "examples/rpc_echo_python_client",
-  "examples/kvstore",
+  "examples/rpc_echo_python_server",
+  # "examples/kvstore",
 ]
 exclude = ["3rdparty/prost"]
 

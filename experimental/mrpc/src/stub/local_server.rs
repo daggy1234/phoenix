@@ -50,8 +50,8 @@ impl Drop for LocalServer {
     }
 }
 
-impl !Send for LocalServer {}
-impl !Sync for LocalServer {}
+// impl !Send for LocalServer {}
+// impl !Sync for LocalServer {}
 
 pub(crate) struct Inner {
     // Receiver.
