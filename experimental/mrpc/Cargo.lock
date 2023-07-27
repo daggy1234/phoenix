@@ -949,6 +949,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "image_server"
+version = "0.1.0"
+dependencies = [
+ "mrpc",
+ "mrpc-build",
+ "prost",
+ "smol",
+ "structopt",
+]
+
+[[package]]
 name = "indexmap"
 version = "1.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
