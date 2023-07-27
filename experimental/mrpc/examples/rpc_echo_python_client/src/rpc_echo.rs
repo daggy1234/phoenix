@@ -1,15 +1,13 @@
 ///  The request message containing the user's name.
-#[repr(C)]
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[repr(C)]#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct HelloRequest {
-    #[prost(bytes = "vec", tag = "1")]
+    #[prost(bytes="vec", tag="1")]
     pub name: ::mrpc::alloc::Vec<u8>,
 }
 ///  The response message containing the greetings
-#[repr(C)]
-#[derive(Clone, PartialEq, ::prost::Message)]
+#[repr(C)]#[derive(Clone, PartialEq, ::prost::Message)]
 pub struct HelloReply {
-    #[prost(bytes = "vec", tag = "1")]
+    #[prost(bytes="vec", tag="1")]
     pub message: ::mrpc::alloc::Vec<u8>,
 }
 /// Generate client implementations.
@@ -25,7 +23,9 @@ pub mod greeter_client {
             let srcs = [super::proto::PROTO_SRCS].concat();
             ::mrpc::stub::update_protos(srcs.as_slice())
         }
-        pub fn connect<A: std::net::ToSocketAddrs>(dst: A) -> Result<Self, ::mrpc::Error> {
+        pub fn connect<A: std::net::ToSocketAddrs>(
+            dst: A,
+        ) -> Result<Self, ::mrpc::Error> {
             Self::update_protos()?;
             let stub = ClientStub::connect(dst).unwrap();
             Ok(Self { stub })
@@ -34,11 +34,11 @@ pub mod greeter_client {
         pub fn say_hello(
             &self,
             req: impl ::mrpc::IntoWRef<super::HelloRequest>,
-        ) -> impl std::future::Future<Output = Result<::mrpc::RRef<super::HelloReply>, ::mrpc::Status>>
-               + '_ {
+        ) -> impl std::future::Future<
+            Output = Result<::mrpc::RRef<super::HelloReply>, ::mrpc::Status>,
+        > + '_ {
             let call_id = self.stub.initiate_call();
-            self.stub
-                .unary(4059748245u32, 3687134534u32, call_id, req.into_wref())
+            self.stub.unary(4059748245u32, 3687134534u32, call_id, req.into_wref())
         }
     }
     impl NamedService for GreeterClient {
@@ -89,7 +89,9 @@ pub mod greeter_server {
                     let req = ::mrpc::RRef::new(&req_opaque, read_heap);
                     let res = self.inner.say_hello(req).await;
                     match res {
-                        Ok(reply) => ::mrpc::stub::service_post_handler(reply, &req_opaque),
+                        Ok(reply) => {
+                            ::mrpc::stub::service_post_handler(reply, &req_opaque)
+                        }
                         Err(_status) => {
                             todo!();
                         }
