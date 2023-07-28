@@ -2279,6 +2279,7 @@ dependencies = [
 name = "python_image_client"
 version = "0.1.0"
 dependencies = [
+<<<<<<< HEAD
  "ctrlc",
  "mrpc",
  "prost",
@@ -2287,12 +2288,16 @@ dependencies = [
  "shmalloc",
  "smol",
  "structopt",
+=======
+ "pyo3",
+>>>>>>> ff0db45 (a)
 ]
 
 [[package]]
 name = "python_image_server"
 version = "0.1.0"
 dependencies = [
+<<<<<<< HEAD
  "ctrlc",
  "mrpc",
  "prost",
@@ -2301,6 +2306,9 @@ dependencies = [
  "shmalloc",
  "smol",
  "structopt",
+=======
+ "pyo3",
+>>>>>>> ff0db45 (a)
 ]
 
 [[package]]

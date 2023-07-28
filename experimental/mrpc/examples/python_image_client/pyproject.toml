@@ -21,7 +21,6 @@ version = "0.1.0"
 description = ""
 authors = ["daggy1234"]
 readme = "README.md"
-packages = [{include = "python_image_client"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
