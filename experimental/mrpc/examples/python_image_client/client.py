@@ -9,10 +9,10 @@ with open("tree.jpg", "rb") as f:
     byt = f.read()
 start = time.time()
 req = ImageRequest(byt)
-o = c.grayscale_image(req)
+o = c.icon_image(req)
 bio = BytesIO(o.data)
 im = Image.open(bio)
-im.save("grayscale.png")
+im.save("icon.png")
 # with open("grayscale.png", "wb") as f:
 #     f.write(o.data)
 end = time.time()

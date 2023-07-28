@@ -126,11 +126,11 @@ impl ImageServer {
     }
 
     fn add_invert_handler(&mut self, wraps: PyObject) -> PyResult<bool> {
-        self.icon_wraps = Some(wraps);
+        self.invert_wraps = Some(wraps);
         Ok(true)
     }
     fn add_icon_handler(&mut self, wraps: PyObject) -> PyResult<bool> {
-        self.invert_wraps = Some(wraps);
+        self.icon_wraps = Some(wraps);
         Ok(true)
     }
 
