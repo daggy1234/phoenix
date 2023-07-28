@@ -2279,7 +2279,6 @@ dependencies = [
 name = "python_image_client"
 version = "0.1.0"
 dependencies = [
-<<<<<<< HEAD
  "ctrlc",
  "mrpc",
  "prost",
@@ -2288,27 +2287,6 @@ dependencies = [
  "shmalloc",
  "smol",
  "structopt",
-=======
- "pyo3",
->>>>>>> ff0db45 (a)
-]
-
-[[package]]
-name = "python_image_server"
-version = "0.1.0"
-dependencies = [
-<<<<<<< HEAD
- "ctrlc",
- "mrpc",
- "prost",
- "pyo3",
- "shm",
- "shmalloc",
- "smol",
- "structopt",
-=======
- "pyo3",
->>>>>>> ff0db45 (a)
 ]
 
 [[package]]
@@ -2512,29 +2490,6 @@ dependencies = [
  "mrpc",
  "mrpc-build",
  "prost",
- "smol",
- "structopt",
-]
-
-[[package]]
-name = "rpc_echo_python_client"
-version = "0.1.0"
-dependencies = [
- "mrpc",
- "prost",
- "pyo3",
- "smol",
- "structopt",
-]
-
-[[package]]
-name = "rpc_echo_python_server"
-version = "0.1.0"
-dependencies = [
- "ctrlc",
- "mrpc",
- "prost",
- "pyo3",
  "smol",
  "structopt",
 ]
