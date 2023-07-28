@@ -2290,6 +2290,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "python_image_server"
+version = "0.1.0"
+dependencies = [
+ "ctrlc",
+ "mrpc",
+ "prost",
+ "pyo3",
+ "shm",
+ "shmalloc",
+ "smol",
+ "structopt",
+]
+
+[[package]]
 name = "quote"
 version = "1.0.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2490,6 +2504,29 @@ dependencies = [
  "mrpc",
  "mrpc-build",
  "prost",
+ "smol",
+ "structopt",
+]
+
+[[package]]
+name = "rpc_echo_python_client"
+version = "0.1.0"
+dependencies = [
+ "mrpc",
+ "prost",
+ "pyo3",
+ "smol",
+ "structopt",
+]
+
+[[package]]
+name = "rpc_echo_python_server"
+version = "0.1.0"
+dependencies = [
+ "ctrlc",
+ "mrpc",
+ "prost",
+ "pyo3",
  "smol",
  "structopt",
 ]

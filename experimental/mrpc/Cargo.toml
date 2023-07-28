@@ -73,10 +73,10 @@ members = [
   "examples/masstree_analytics",
   "examples/hotel_reservation",
   # "examples/hotel_microservices",
-  # "examples/rpc_echo_python_client",
-  # "examples/rpc_echo_python_server",
+   "examples/rpc_echo_python_client",
+   "examples/rpc_echo_python_server",
   "examples/python_image_client",
-  # "examples/python_image_server",
+  "examples/python_image_server",
   "examples/image_server",
   # "examples/kvstore",
 ]

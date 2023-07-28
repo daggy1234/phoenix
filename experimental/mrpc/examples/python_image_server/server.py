@@ -4,44 +4,30 @@ from io import BytesIO
 
 
 def grayscale_image(req: ImageRequest) -> ImageResponse:
-    try:
-        iob = BytesIO(req.data)
-        im = Image.open(iob)
-        out = ImageOps.grayscale(im)
-        b = BytesIO()
-        out.save(b,"png")
-        byt = b.getvalue()
-        return ImageResponse(byt)
-    except Exception as e:
-        print(e)
-        return ImageResponse(b'oops')
+    iob = BytesIO(req.data)
+    im = Image.open(iob)
+    out = ImageOps.grayscale(im)
+    b = BytesIO()
+    out.save(b,"png")
+    return ImageResponse(b.getvalue())
 
 def invert_image(req: ImageRequest) -> ImageResponse:
-    try:
-        iob = BytesIO(req.data)
-        im = Image.open(iob)
-        out = ImageOps.invert(im)
-        b = BytesIO()
-        out.save(b,"png")
-        byt = b.getvalue()
-        return ImageResponse(byt)
-    except Exception as e:
-        print(e)
-        return ImageResponse(b'oops')
+    iob = BytesIO(req.data)
+    im = Image.open(iob)
+    out = ImageOps.invert(im)
+    b = BytesIO()
+    out.save(b,"png")
+    return ImageResponse(b.getvalue())
 
 
 def icon_image(req: ImageRequest) -> ImageResponse:
-    try:
-        iob = BytesIO(req.data)
-        im = Image.open(iob)
-        out = im.resize((32,32), resample=Image.Resampling.LANCZOS)
-        b = BytesIO()
-        out.save(b,"png")
-        byt = b.getvalue()
-        return ImageResponse(byt)
-    except Exception as e:
-        print(e)
-        return ImageResponse(b'oops')
+    iob = BytesIO(req.data)
+    im = Image.open(iob)
+    out = im.resize((32,32), resample=Image.Resampling.LANCZOS)
+    b = BytesIO()
+    out.save(b,"png")
+    return ImageResponse(b.getvalue())
+
 
 s = ImageServer()
 s.add_grayscale_handler(grayscale_image)
