@@ -20,6 +20,8 @@ package image_server;
 service Processor {
   // Sends a greeting
   rpc GrayscaleImage (stream ImageRequest) returns (stream ImageResponse) {}
+  rpc InvertImage (stream ImageRequest) returns (stream ImageResponse) {}
+  rpc IconImage (stream ImageRequest) returns (stream ImageResponse) {}
 }
 
 // The request message containing the user's name.

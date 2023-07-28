@@ -26,4 +26,5 @@ packages = [{include = "python_image_client"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 maturin = "^1.1.0"
+pillow = "^10.0.0"
 
