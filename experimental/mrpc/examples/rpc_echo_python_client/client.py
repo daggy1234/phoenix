@@ -1,16 +1,18 @@
 from rpc_echo_python_client import Connection, HelloRequest
 import time
 import csv
-from random import random
+from random import randbytes, randrange
 
 c = Connection("172.31.27.226:5000")
 
-for length in range(1,(10**9),10):
+for pow in range(7):
+    length = 10 ** pow
+    print(length)
     time_l = []
     for i in range(1000):
+        req_str = "a" * length
         start = time.time()
-        req_str = "".join(chr(random(0, 0x110000)) for _ in range(length))
-        req = HelloRequest(f"test message number {i}")
+        req = HelloRequest(req_str)
         o = c.say_hello(req)
         end = time.time()
         diff = end - start
