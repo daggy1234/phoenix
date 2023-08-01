@@ -16,7 +16,7 @@ for pow in range(7):
         o = c.say_hello(req)
         end = time.time()
         diff = end - start
-        time_l.append([str(i), diff])
+        time_l.append([diff])
 
     with open(f"./data/mrpc_data_{length}.csv", "w") as f:
         csvwriter = csv.writer(f)
