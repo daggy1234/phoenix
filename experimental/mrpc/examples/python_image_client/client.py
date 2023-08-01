@@ -7,13 +7,12 @@ from io import BytesIO
 time_ls = []
 with open("tree.jpg", "rb") as f:
     byt = f.read()
-c = Connection("172.31.27.226:5000")
-for i in range(1000):
+c = Connection("0.0.0.0:5000")
+for i in range(10):
     start_g = time.time()
     req_g = ImageRequest(byt)
     o = c.grayscale_image(req_g)
     end_g = time.time()
-
 
     start_i = time.time()
     req_i = ImageRequest(byt)

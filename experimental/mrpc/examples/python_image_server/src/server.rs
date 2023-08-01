@@ -36,11 +36,11 @@ impl Processor for ImageServer {
             let o = obj.grayscale_wraps.unwrap().call(py, args, kwargs);
             let res = match o {
                 Ok(r) => r,
-                Err(e) => panic!("Error"),
+                Err(e) => panic!("Error {}", e),
             };
             let o = match res.extract::<objects::ImageResponse>(py) {
                 Ok(r) => r,
-                Err(e) => panic!("Error"),
+                Err(e) => panic!("Error {}", e),
             };
             o
         });

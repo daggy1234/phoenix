@@ -19,9 +19,9 @@ package image_server;
 // The greeting service definition.
 service Processor {
   // Sends a greeting
-  rpc GrayscaleImage (stream ImageRequest) returns (stream ImageResponse) {}
-  rpc InvertImage (stream ImageRequest) returns (stream ImageResponse) {}
-  rpc IconImage (stream ImageRequest) returns (stream ImageResponse) {}
+  rpc GrayscaleImage (ImageRequest) returns (ImageResponse) {}
+  rpc InvertImage (ImageRequest) returns (ImageResponse) {}
+  rpc IconImage (ImageRequest) returns (ImageResponse) {}
 }
 
 // The request message containing the user's name.

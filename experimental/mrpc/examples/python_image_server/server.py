@@ -1,10 +1,12 @@
 from python_image_server import ImageServer, ImageRequest, ImageResponse
 from PIL import Image, ImageOps
 from io import BytesIO
+import base64
 
 
 def grayscale_image(req: ImageRequest) -> ImageResponse:
-    iob = BytesIO(req.data)
+    byt = bytes(req.data)
+    iob = BytesIO(byt)
     im = Image.open(iob)
     out = ImageOps.grayscale(im)
     b = BytesIO()
@@ -12,7 +14,8 @@ def grayscale_image(req: ImageRequest) -> ImageResponse:
     return ImageResponse(b.getvalue())
 
 def invert_image(req: ImageRequest) -> ImageResponse:
-    iob = BytesIO(req.data)
+    byt = bytes(req.data)
+    iob = BytesIO(byt)
     im = Image.open(iob)
     out = ImageOps.invert(im)
     b = BytesIO()
@@ -21,7 +24,8 @@ def invert_image(req: ImageRequest) -> ImageResponse:
 
 
 def icon_image(req: ImageRequest) -> ImageResponse:
-    iob = BytesIO(req.data)
+    byt = bytes(req.data)
+    iob = BytesIO(byt)
     im = Image.open(iob)
     out = im.resize((32,32), resample=Image.Resampling.LANCZOS)
     b = BytesIO()
