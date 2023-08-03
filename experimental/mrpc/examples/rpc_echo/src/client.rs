@@ -14,7 +14,7 @@ use std::time::Instant;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let client = GreeterClient::connect("172.31.27.226:5000")?;
     for pow in 0..7 {
-        let length = usize::pow(10,pow);
+        let length = usize::pow(10, pow);
         println!("Doing {}", length);
         let mut time_vec = vec![];
         for i in 0..1000 {
