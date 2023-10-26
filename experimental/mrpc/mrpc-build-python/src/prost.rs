@@ -1,40 +1,52 @@
 use std::ffi::OsString;
 use std::io;
 use std::path::{Path, PathBuf};
-
 use proc_macro2::TokenStream;
 use prost_build::Config;
 use quote::quote;
+use syn::Pat;
 
 use crate::attribute::Attributes;
-use crate::{client, server};
+use crate::client;
 
 /// Simple `.proto` compiling. Use [`configure`] instead if you need more options.
 ///
 /// The include directory will be the parent folder of the specified path.
 /// The package name will be the filename without the extension.
-pub fn compile_protos(proto: impl AsRef<Path>) -> io::Result<()> {
+pub fn compile_protos(proto: impl AsRef<Path>, out_dir: PathBuf) -> io::Result<()> {
     let proto_path: &Path = proto.as_ref();
 
+    let out_dit_arg = out_dir.clone();
     // directory the main .proto file resides in
     let proto_dir = proto_path
         .parent()
         .expect("proto file should reside in a directory");
 
-    self::configure().compile(&[proto_path], &[proto_dir])?;
+    let out_n = proto_path.file_name().and_then(|name| name.to_str()).unwrap().to_string();
+    let new_path_rust = str::replace(&out_n, ".proto", ".rs");
+    let new_path_python = str::replace(&out_n, ".proto", ".py");
+
+    self::configure(out_dit_arg).compile(&[proto_path], &[proto_dir])?;
+
+    let mut old_path = out_dir.clone();
+    old_path.push(new_path_rust);
+    let mut new_path_buf = out_dir.clone();
+    new_path_buf.push(&new_path_python);
+    println!("Old: {:?}\nNew: {:?}", old_path.as_os_str(), new_path_buf.as_os_str());
+    std::fs::rename(old_path, new_path_buf)?;
+
 
     Ok(())
 }
 
-/// Configure `mrpc-build` code generation.
-///
-/// Use [`compile_protos`] instead if you don't need to tweak anything.
-pub fn configure() -> Builder {
+
+// Complie protos with default config. Will not be editable rn
+pub fn configure(out_dir: PathBuf) -> Builder {
     Builder {
         build_client: true,
         // Do not build server
-        // build_server: false,
-        // server_attributes: Attributes::default(),
+        build_server: false,
+        server_attributes: Attributes::default(),
         client_attributes: Attributes::default(),
         proto_path: "super".to_string(),
         emit_package: true,
@@ -45,7 +57,7 @@ pub fn configure() -> Builder {
         compile_well_known_types: false,
         protoc_args: Vec::new(),
         include_file: None,
-        out_dir: None,
+        out_dir: Some(out_dir),
     }
 }
 
@@ -54,9 +66,9 @@ pub fn configure() -> Builder {
 pub struct Builder {
     // Switches
     pub(crate) build_client: bool,
-    // pub(crate) build_server: bool,
+    pub(crate) build_server: bool,
     // client/server service settings
-    // pub(crate) server_attributes: Attributes,
+    pub(crate) server_attributes: Attributes,
     pub(crate) client_attributes: Attributes,
     pub(crate) proto_path: String,
     pub(crate) emit_package: bool,
@@ -275,7 +287,7 @@ impl Builder {
 
 struct ServiceGenerator {
     builder: Builder,
-    clients: TokenStream,
+    clients: String,
     servers: TokenStream,
 }
 
@@ -283,7 +295,7 @@ impl ServiceGenerator {
     fn new(builder: Builder) -> Self {
         ServiceGenerator {
             builder,
-            clients: TokenStream::default(),
+            clients: String::new(),
             servers: TokenStream::default(),
         }
     }
@@ -291,16 +303,16 @@ impl ServiceGenerator {
 
 impl prost_build::ServiceGenerator for ServiceGenerator {
     fn generate(&mut self, service: prost_build::Service, _buf: &mut String) {
-        if self.builder.build_server {
-            let server = server::generate(
-                &service,
-                self.builder.emit_package,
-                &self.builder.proto_path,
-                self.builder.compile_well_known_types,
-                &self.builder.server_attributes,
-            );
-            self.servers.extend(server);
-        }
+        // if self.builder.build_server {
+        //     let server = server::generate(
+        //         &service,
+        //         self.builder.emit_package,
+        //         &self.builder.proto_path,
+        //         self.builder.compile_well_known_types,
+        //         &self.builder.server_attributes,
+        //     );
+        //     self.servers.extend(server);
+        // }
 
         if self.builder.build_client {
             let client = client::generate(
@@ -310,38 +322,31 @@ impl prost_build::ServiceGenerator for ServiceGenerator {
                 self.builder.compile_well_known_types,
                 &self.builder.client_attributes,
             );
-            self.clients.extend(client);
+            self.clients = client;
         }
     }
 
     fn finalize(&mut self, buf: &mut String) {
         if self.builder.build_client && !self.clients.is_empty() {
-            let clients = &self.clients;
+            let code = &self.clients;
+            buf.push_str(code);
 
-            let client_service = quote::quote! {
-                #clients
-            };
-
-            let ast: syn::File = syn::parse2(client_service).expect("not a valid tokenstream");
-            let code = prettyplease::unparse(&ast);
-            buf.push_str(&code);
-
-            self.clients = TokenStream::default();
+            self.clients = String::new();
         }
 
-        if self.builder.build_server && !self.servers.is_empty() {
-            let servers = &self.servers;
+        // if self.builder.build_server && !self.servers.is_empty() {
+        //     let servers = &self.servers;
 
-            let server_service = quote::quote! {
-                #servers
-            };
+        //     let server_service = quote::quote! {
+        //         #servers
+        //     };
 
-            let ast: syn::File = syn::parse2(server_service).expect("not a valid tokenstream");
-            let code = prettyplease::unparse(&ast);
-            buf.push_str(&code);
+        //     let ast: syn::File = syn::parse2(server_service).expect("not a valid tokenstream");
+        //     let code = prettyplease::unparse(&ast);
+        //     buf.push_str(&code);
 
-            self.servers = TokenStream::default();
-        }
+        //     self.servers = TokenStream::default();
+        // }
     }
 
     fn finalize_package(&mut self, package: prost_build::Package, buf: &mut String) {
@@ -352,14 +357,14 @@ impl prost_build::ServiceGenerator for ServiceGenerator {
             proto_srcs.push(src);
         }
 
-        let tokens = quote! {
-            pub mod #package_mod {
-                pub const PROTO_SRCS: &[&str] = &[#(#proto_srcs),*];
-            }
-        };
-        let ast: syn::File = syn::parse2(tokens).expect("not a valid tokenstream");
-        let code = prettyplease::unparse(&ast);
-        buf.push_str(&code);
+        // let tokens = quote! {
+        //     pub mod #package_mod {
+        //         pub const PROTO_SRCS: &[&str] = &[#(#proto_srcs),*];
+        //     }
+        // };
+        // let ast: syn::File = syn::parse2(tokens).expect("not a valid tokenstream");
+        // let code = prettyplease::unparse(&ast);
+        // buf.push_str(&code);
     }
 }
 
@@ -424,7 +429,7 @@ impl crate::Method for prost_build::Method {
                     .unwrap()
                     .to_token_stream()
             } else {
-                syn::parse_str::<syn::Path>(&format!("{}::{}", proto_path, rust_type))
+                syn::parse_str::<syn::Path>(&format!("{}", rust_type))
                     .unwrap()
                     .to_token_stream()
             }

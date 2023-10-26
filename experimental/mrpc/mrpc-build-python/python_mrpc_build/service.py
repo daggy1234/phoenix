@@ -7,3 +7,6 @@ class Service:
         self.comments = comments
         pass
     
+    def connect():
+        raise Exception("Not implemented")
+    

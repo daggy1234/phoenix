@@ -39,23 +39,21 @@
 //! }
 //!```
 
-#![deny(missing_docs)]
 #![deny(rustdoc::broken_intra_doc_links)]
 #![warn(missing_debug_implementations)]
 
-use std::collections::BTreeSet;
+use std::{collections::BTreeSet, path::PathBuf};
 
 use proc_macro2::TokenStream;
 
 mod prost;
 pub use prost::{compile_protos, configure, Builder};
 
-/// Service code generation for Server
 
-/// Attributes that will be added to `mod` and `struct` items.
-pub mod attribute;
 /// Service code generation for client
 pub mod client;
+/// Attributes that will be added to `mod` and `struct` items.
+pub mod attribute;
 
 /// Service generation trait.
 ///
@@ -203,4 +201,9 @@ fn get_proto_packages<T: Service>(service: &T, proto_path: &str) -> BTreeSet<Str
         }
     }
     proto_packages
+}
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+    compile_protos("protos/rpc_hello.proto", PathBuf::from("out"))?;
+    Ok(())
 }
