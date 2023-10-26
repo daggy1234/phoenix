@@ -1411,6 +1411,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "mrpc-build-python"
+version = "0.1.0"
+dependencies = [
+ "crc32fast",
+ "prettyplease",
+ "proc-macro2",
+ "prost-build",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "mrpc-derive"
 version = "0.1.0"
 dependencies = [

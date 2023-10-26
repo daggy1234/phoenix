@@ -41,6 +41,7 @@ spin.workspace = true
 members = [
   # mrpc user-land libraries
   "mrpc-build",
+  "mrpc-build-python",
   "mrpc-derive",
   "mrpc-marshal",
   # extension to phoenix-api
