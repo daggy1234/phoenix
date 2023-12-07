@@ -43,6 +43,7 @@ members = [
   "mrpc-build",
   "mrpc-build-python",
   "mrpc-derive",
+  "mrpc-python-base",
   "mrpc-marshal",
   # extension to phoenix-api
   "phoenix-api/mrpc",

@@ -54,6 +54,7 @@ pub use prost::{compile_protos, configure, Builder};
 pub mod client;
 /// Attributes that will be added to `mod` and `struct` items.
 pub mod attribute;
+pub mod server;
 
 /// Service generation trait.
 ///

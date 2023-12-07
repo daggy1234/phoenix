@@ -103,7 +103,7 @@ impl Engine for QosEngine {
         BUFFER.with_borrow_mut(|buf| {
             let mut messages = buf.drain().collect::<Vec<_>>();
             let client_pid = self.client_pid;
-            let drained = messages.drain_filter(|msg| msg.0.source == client_pid);
+            let drained = messages.extract_if(|msg| msg.0.source == client_pid);
             for msg in drained {
                 self.tx_outputs()[0].send(msg.0.message)?;
             }

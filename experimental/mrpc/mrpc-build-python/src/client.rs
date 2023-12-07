@@ -40,18 +40,20 @@ pub fn generate<T: Service>(
     format!(r#"
 
 
-
-class {}(Service):
+# Service Should be a subclass of ClientStub.
+# TODO ask about NamedService?
+class {}(ClientStub):
     
     def __init__(self):
-        super().__init__('{}', '{}', '{}', [])
+        # Service Name, Package, ServiceId ,Path 
+        super().__init__('{}', '{}',{} ,'{}', [])
 
     def connect(self, addr: str):
         self.connect(addr)
 
     {}
 
-    "#, service_ident,package,service_ident ,path, methods)
+    "#, service_ident,package,service_ident,service_id ,path, methods)
 
     // quote::quote! {
     //     /// Generate client implementations.
