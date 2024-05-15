@@ -55,21 +55,21 @@ frontend = pd.read_csv(
 )
 logs = pd.concat([geo, rate, profile, search, frontend], ignore_index=True)
 
-request_latency_table = dict()
+request_latency_table = {}
 for _, row in logs.iterrows():
     index = row["index"]
     ty = row["type"]
     service = row["service"]
     dura = row["duration"]
     if index not in request_latency_table:
-        request_latency_table[index] = dict()
+        request_latency_table[index] = {}
     if service not in request_latency_table[index]:
-        request_latency_table[index][service] = dict()
+        request_latency_table[index][service] = {}
 
-    if ty == "Proc":
-        request_latency_table[index][service]["app_proc"] = dura
-    elif ty == "EndToEnd":
+    if ty == "EndToEnd":
         request_latency_table[index][service]["end_to_end"] = dura
+    elif ty == "Proc":
+        request_latency_table[index][service]["app_proc"] = dura
     else:
         raise ValueError("invalid record type")
 
@@ -92,8 +92,8 @@ for index, service_lats in request_latency_table.items():
         service_lats["frontend"]["app_proc"] + service_lats["frontend"]["network"]
     ))
 
-services_traces = dict()
-for _, service_lats in request_latency_table.items():
+services_traces = {}
+for service_lats in request_latency_table.values():
     for service, lat in service_lats.items():
         if service not in services_traces:
             services_traces[service] = {
@@ -104,9 +104,9 @@ for _, service_lats in request_latency_table.items():
         services_traces[service]["app_proc"].append(lat["app_proc"])
         services_traces[service]["network"].append(lat["network"])
         services_traces[service]["end_to_end"].append(lat["end_to_end"])
-    
-p95_latency = dict()
-p99_latency = dict()
+
+p95_latency = {}
+p99_latency = {}
 for service, traces in services_traces.items():
     traces["app_proc"] = np.array(traces["app_proc"], dtype=np.int64)
     traces["network"] = np.array(traces["network"], dtype=np.int64)
@@ -116,7 +116,7 @@ for service, traces in services_traces.items():
     traces["end_to_end"] = traces["end_to_end"][indices]
     traces["app_proc"] = traces["app_proc"][indices]
     traces["network"] = traces["network"][indices]
-    
+
     p95_latency[service] = {
         "AppProc": np.percentile(traces["app_proc"], q=95) / 1000,
         "Network": np.percentile(traces["network"], q=95) / 1000,

@@ -6,9 +6,7 @@ import sys
 import numpy as np
 import multiprocessing
 
-OD = "/tmp/mrpc-eval"
-if len(sys.argv) >= 2:
-    OD = sys.argv[1]
+OD = sys.argv[1] if len(sys.argv) >= 2 else "/tmp/mrpc-eval"
 
 # x-axis: # client threads
 # y-axis: goodput in Mrpcs
@@ -27,7 +25,7 @@ def get_goodput(path: str) -> List[float]:
 
 
 def get_rate(ncores: int, path: str) -> List[float]:
-    rates = [[] for i in range(ncores)]
+    rates = [[] for _ in range(ncores)]
     with open(path, 'r') as fin:
         for line in fin:
             words = line.strip().split(' ')
@@ -41,13 +39,10 @@ def get_rate(ncores: int, path: str) -> List[float]:
         assert len(rate) > 2, f'{rates}'
         rates[i] = rate[2:]
         min_len = min(min_len, len(rates[i]))
-    agg_rates = []
-    for i in range(min_len):
-        s = 0
-        for tid in range(ncores):
-            s += float(rates[tid][i])
-        agg_rates.append(s)
-    return agg_rates
+    return [
+        sum(float(rates[tid][i]) for tid in range(ncores))
+        for i in range(min_len)
+    ]
 
 # /tmp/mrpc-eval/benchmark/rpc_bench_rate_32/rpc_bench_rate_32b_1c/rpc_bench_client_danyang-05.stderr
 
@@ -55,7 +50,7 @@ def get_rate(ncores: int, path: str) -> List[float]:
 def get_cpus(path: str):
     cpus = []
     for host in ["server", "client"]:
-        with open(os.path.dirname(path)+f'/mpstat_{host}.out', 'r') as fin:
+        with open(f'{os.path.dirname(path)}/mpstat_{host}.out', 'r') as fin:
             out = fin.read().strip()
         cpu_count = multiprocessing.cpu_count()
         mpstat = []
@@ -86,9 +81,9 @@ def load_result(solution, f: str):
 
 
 solution = 'mRPC'
-for f in glob.glob(OD+"/benchmark/rpc_bench_rate_rdma_32/rpc_bench_rate_*/rpc_bench_client_danyang-05.stdout"):
+for f in glob.glob(f"{OD}/benchmark/rpc_bench_rate_rdma_32/rpc_bench_rate_*/rpc_bench_client_danyang-05.stdout"):
     load_result(solution, f)
 
 solution = 'mRPC-TCP'
-for f in glob.glob(OD+"/benchmark/rpc_bench_rate_tcp_32/rpc_bench_rate_*/rpc_bench_client_danyang-05.stdout"):
+for f in glob.glob(f"{OD}/benchmark/rpc_bench_rate_tcp_32/rpc_bench_rate_*/rpc_bench_client_danyang-05.stdout"):
     load_result(solution, f)

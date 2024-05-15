@@ -7,10 +7,7 @@ import time
 import toml
 import sys
 
-OD = "/tmp/mrpc-eval"
-if len(sys.argv) >= 2:
-    OD = sys.argv[1]
-
+OD = sys.argv[1] if len(sys.argv) >= 2 else "/tmp/mrpc-eval"
 SCRIPTDIR = pathlib.Path(__file__).parent.resolve()
 CONFIG_PATH = os.path.join(SCRIPTDIR, "config.toml")
 

@@ -27,12 +27,11 @@ from typing import Dict, Tuple, Any, Optional, List
 
 def compress_query(query: str) -> str:
     query = query.replace("\n", "")
-    query = re.sub("\s+", " ", query)
-    return query
+    return re.sub("\s+", " ", query)
 
 
 def post(url: str, body: Optional[Any] = None, auth: Optional[Tuple[str, str]] = None):
-    print(f"Requesting POST to", url, "with", body)
+    print("Requesting POST to", url, "with", body)
     headers = {}
     req = request.Request(url, headers=headers, method="POST")
     if auth is not None:
@@ -165,5 +164,5 @@ def find_ccs(body: str) -> List[str]:
         users = [x.strip() for x in match.split("@")]
         reviewers += users
 
-    reviewers = set(x for x in reviewers if x != "")
+    reviewers = {x for x in reviewers if x != ""}
     return list(reviewers)
